@@ -63,11 +63,11 @@ export default {
       } else if (url.pathname === "/spend-time" && request.method === "GET") {
         const jobId = url.searchParams.get('job_id');
         const realmId = url.searchParams.get('realm_id');
-
+        const randomNum = Math.random() * 100;
         return new Response(JSON.stringify({
           jobId,
           realmId,
-          spendTime: 7.1,
+          spendTime: 580 + randomNum,
         }), {
           status: 200,
           headers: {
