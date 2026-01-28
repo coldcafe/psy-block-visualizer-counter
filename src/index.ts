@@ -31,6 +31,7 @@ function getCorsHeaders(request: Request) {
 
 export default {
   async fetch(request, env, ctx): Promise<Response> {
+    const url = new URL(request.url);
     try {
       const counterId = env.COUNTER_DURABLE_OBJECT.idFromName(COUNTER_ID);
       const counterStub = env.COUNTER_DURABLE_OBJECT.get(counterId);
@@ -43,7 +44,7 @@ export default {
         });
       }
 
-      if (request.method === "POST") {
+      if (url.pathname === "/count" && request.method === "POST") {
         const response = await counterStub.fetch(
           new Request("http://do/increment", { method: "POST" })
         );
@@ -51,7 +52,7 @@ export default {
           status: 200,
           headers: getCorsHeaders(request),
         });
-      } else if (request.method === "GET") {
+      } else if (url.pathname === "/count" && request.method === "GET") {
         const response = await counterStub.fetch(
           new Request("http://do/get", { method: "GET" })
         );
@@ -59,8 +60,23 @@ export default {
           status: 200,
           headers: getCorsHeaders(request),
         });
+      } else if (url.pathname === "/spend-time" && request.method === "GET") {
+        const jobId = url.searchParams.get('job_id');
+        const realmId = url.searchParams.get('realm_id');
+
+        return new Response(JSON.stringify({
+          jobId,
+          realmId,
+          spendTime: 7.1,
+        }), {
+          status: 200,
+          headers: {
+            'Content-Type': 'application/json',
+            ...getCorsHeaders(request),
+          },
+        });
       } else {
-        return new Response("Method not allowed", { status: 405, headers: getCorsHeaders(request) });
+        return new Response("Not Found", { status: 404, headers: getCorsHeaders(request) });
       }
     } catch (err) {
       console.error(`Durable Object returned error:`, err);
