@@ -12,19 +12,20 @@ const ALLOWED_ORIGINS = [
   'http://localhost:3000', // 开发用
 ];
 
-function setCorsHeaders(request: Request, response: Response) {
+function getCorsHeaders(request: Request) {
   const origin = request.headers.get('Origin');
+  let corsHeaders = {};
 
   if (origin && ALLOWED_ORIGINS.includes(origin)) {
-    response.headers.set('Access-Control-Allow-Origin', origin);
-    response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    if (request.headers.get('Access-Control-Request-Headers')) {
-      response.headers.set('Access-Control-Allow-Headers', request.headers.get('Access-Control-Request-Headers') || '');
-    } else {
-      response.headers.set('Access-Control-Allow-Headers', '*');
-    }
-    response.headers.set('Access-Control-Allow-Credentials', 'true');
+    
+    corsHeaders = {
+      'Access-Control-Allow-Origin': origin,
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
+      'Access-Control-Allow-Credentials': 'true'
+    };
   }
+  return corsHeaders;
 }
 
 export default {
@@ -35,29 +36,30 @@ export default {
 
       // 预检请求直接返回 204
       if (request.method === 'OPTIONS') {
-        const response = new Response(null, {
+        return new Response(null, {
           status: 204,
+          headers: getCorsHeaders(request),
         });
-        setCorsHeaders(request, response);
-        return response;
       }
 
       if (request.method === "POST") {
         const response = await counterStub.fetch(
           new Request("http://do/increment", { method: "POST" })
         );
-        setCorsHeaders(request, response);
-        return response;
+        return new Response(await response.text(), {
+          status: 200,
+          headers: getCorsHeaders(request),
+        });
       } else if (request.method === "GET") {
         const response = await counterStub.fetch(
           new Request("http://do/get", { method: "GET" })
         );
-        setCorsHeaders(request, response);
-        return response;
+        return new Response(await response.text(), {
+          status: 200,
+          headers: getCorsHeaders(request),
+        });
       } else {
-        const response = new Response("Method not allowed", { status: 405 });
-        setCorsHeaders(request, response);
-        return response;
+        return new Response("Method not allowed", { status: 405, headers: getCorsHeaders(request) });
       }
     } catch (err) {
       console.error(`Durable Object returned error:`, err);
@@ -65,12 +67,10 @@ export default {
         err instanceof Error
           ? err.message
           : "An unknown error occurred when accessing Durable Object";
-      const response = new Response(errorMessage, {
+      return new Response(errorMessage, {
         status: 500,
-        headers: { "Content-Type": "text/plain" },
+        headers: Object.assign({ "Content-Type": "text/plain" }, getCorsHeaders(request)),
       });
-      setCorsHeaders(request, response);
-      return response;
     }
   },
 } satisfies ExportedHandler<Env>;
