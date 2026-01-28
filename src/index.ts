@@ -1,16 +1,29 @@
 export interface Env {
-  USER_NOTIFICATION: KVNamespace;
+  KV: KVNamespace;
 }
-
+const Key = "verification_count";
 export default {
   async fetch(request, env, ctx): Promise<Response> {
     try {
-      await env.USER_NOTIFICATION.put("user_2", "disabled");
-      const value = await env.USER_NOTIFICATION.get("user_2");
-      if (value === null) {
-        return new Response("Value not found", { status: 404 });
+      if (request.method === "POST") {
+        const verificationCountStr = await env.KV.get(Key);
+        let verificationCount = 0;
+        if (!verificationCountStr) {
+          verificationCount = 0;
+        } else {
+          verificationCount = parseInt(verificationCountStr, 10);
+        }
+        await env.KV.put(Key, (verificationCount + 1).toString());
+        return new Response(verificationCountStr);
+      } else if (request.method === "GET") {
+        let verificationCountStr = await env.KV.get(Key);
+        if (!verificationCountStr) {
+          verificationCountStr = "0";
+        }
+        return new Response(verificationCountStr);
+      } else {
+        return new Response("Method not allowed", { status: 405 });
       }
-      return new Response(value);
     } catch (err) {
       console.error(`KV returned error:`, err);
       const errorMessage =
