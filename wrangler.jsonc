@@ -10,10 +10,13 @@
 	"observability": {
 		"enabled": true
 	},
-	"kv_namespaces": [
-		{
-		"binding": "KV",
-		"id": "3f8fd50ea0454288afb1f239f0118048"
-		}
-	]
+	"durable_objects": {
+		"bindings": [
+			{
+				"name": "COUNTER_DURABLE_OBJECT",
+				"class_name": "CounterDurableObject",
+				"script_name": "psy-block-visualizer-counter"
+			}
+		]
+	}
 }

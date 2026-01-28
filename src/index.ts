@@ -1,35 +1,38 @@
+import { CounterDurableObject } from "./counter";
+
 export interface Env {
-  KV: KVNamespace;
+  COUNTER_DURABLE_OBJECT: DurableObjectNamespace;
 }
-const Key = "verification_count";
+
+export { CounterDurableObject };
+
+const COUNTER_ID = "counter";
+
 export default {
   async fetch(request, env, ctx): Promise<Response> {
     try {
+      const counterId = env.COUNTER_DURABLE_OBJECT.idFromName(COUNTER_ID);
+      const counterStub = env.COUNTER_DURABLE_OBJECT.get(counterId);
+
       if (request.method === "POST") {
-        const verificationCountStr = await env.KV.get(Key);
-        let verificationCount = 0;
-        if (!verificationCountStr) {
-          verificationCount = 0;
-        } else {
-          verificationCount = parseInt(verificationCountStr, 10);
-        }
-        await env.KV.put(Key, (verificationCount + 1).toString());
-        return new Response(verificationCountStr);
+        const response = await counterStub.fetch(
+          new Request("http://do/increment", { method: "POST" })
+        );
+        return response;
       } else if (request.method === "GET") {
-        let verificationCountStr = await env.KV.get(Key);
-        if (!verificationCountStr) {
-          verificationCountStr = "0";
-        }
-        return new Response(verificationCountStr);
+        const response = await counterStub.fetch(
+          new Request("http://do/get", { method: "GET" })
+        );
+        return response;
       } else {
         return new Response("Method not allowed", { status: 405 });
       }
     } catch (err) {
-      console.error(`KV returned error:`, err);
+      console.error(`Durable Object returned error:`, err);
       const errorMessage =
         err instanceof Error
           ? err.message
-          : "An unknown error occurred when accessing KV storage";
+          : "An unknown error occurred when accessing Durable Object";
       return new Response(errorMessage, {
         status: 500,
         headers: { "Content-Type": "text/plain" },
