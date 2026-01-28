@@ -14,8 +14,7 @@
 		"bindings": [
 			{
 				"name": "COUNTER_DURABLE_OBJECT",
-				"class_name": "CounterDurableObject",
-				"script_name": "psy-block-visualizer-counter"
+				"class_name": "CounterDurableObject"
 			}
 		]
 	}
