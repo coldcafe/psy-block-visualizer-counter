@@ -7,25 +7,25 @@ export interface Env {
 export { CounterDurableObject };
 
 const COUNTER_ID = "counter";
-const ALLOWED_ORIGINS = [
-  'https://psy-block-isualizer.vercel.app',
-  'https://psy-block-visualizer.psy-protocol.xyz',
-  'http://localhost:3000', // 开发用
-];
+// const ALLOWED_ORIGINS = [
+//   'https://psy-block-isualizer.vercel.app',
+//   'https://psy-block-visualizer.psy-protocol.xyz',
+//   'http://localhost:3000', // 开发用
+// ];
 
 function getCorsHeaders(request: Request) {
   const origin = request.headers.get('Origin');
-  let corsHeaders = {};
+  let corsHeaders = {
+    'Access-Control-Allow-Origin': origin,
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
+    'Access-Control-Allow-Credentials': 'true'
+  } as any;
 
-  if (origin && ALLOWED_ORIGINS.includes(origin)) {
+  // if (origin && ALLOWED_ORIGINS.includes(origin)) {
     
-    corsHeaders = {
-      'Access-Control-Allow-Origin': origin,
-      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
-      'Access-Control-Allow-Credentials': 'true'
-    };
-  }
+  //   corsHeaders = ;
+  // }
   return corsHeaders;
 }
 
