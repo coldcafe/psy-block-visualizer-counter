@@ -9,6 +9,7 @@ export { CounterDurableObject };
 const COUNTER_ID = "counter";
 const ALLOWED_ORIGINS = [
   'https://psy-block-isualizer.vercel.app',
+  'https://psy-block-visualizer.psy-protocol.xyz',
   'http://localhost:3000', // 开发用
 ];
 
