@@ -89,14 +89,13 @@ export default {
 
         const r2Key = `output/${realmId}/${jobId}/raw_proof.json`;
         const object = await env.BUCKET.head(r2Key);
-        const fileExists = object !== null;
-
+        if (!object) {
+          return new Response("Not Found", { status: 404, headers: getCorsHeaders(request) });
+        }
         return new Response(JSON.stringify({
           jobId,
           realmId,
-          spendTime: Math.round(spendTime),
-          r2Key,
-          fileExists,
+          spendTime: Math.round(spendTime)
         }), {
           status: 200,
           headers: {
