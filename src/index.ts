@@ -87,7 +87,7 @@ export default {
           spendTime += randomNum
         }
 
-        const r2Key = `${realmId}/${jobId}/raw_proof.json`;
+        const r2Key = `output/${realmId}/${jobId}/raw_proof.json`;
         const object = await env.BUCKET.head(r2Key);
         const fileExists = object !== null;
 
