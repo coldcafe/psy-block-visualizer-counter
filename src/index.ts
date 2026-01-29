@@ -87,7 +87,7 @@ export default {
         return new Response(JSON.stringify({
           jobId,
           realmId,
-          spendTime: spendTime,
+          spendTime: Math.round(spendTime),
         }), {
           status: 200,
           headers: {
