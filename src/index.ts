@@ -15,14 +15,16 @@ const COUNTER_ID = "counter";
 // ];
 
 const circuitTypeSpendTimeMap = {
-  '54': 593,
-  '48': 287,
+  '54': 219,
+  '48': 219,
   '7': 200,
   '57': 200,
   '10': 310,
   '40': 608,
   '32': 870,
   '55': 310,
+  '59': 300,
+  '56': 540,
 } as any;
 
 function getCorsHeaders(request: Request) {
