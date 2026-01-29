@@ -95,6 +95,7 @@ export default {
           jobId,
           realmId,
           spendTime: Math.round(spendTime),
+          r2Key,
           fileExists,
         }), {
           status: 200,
