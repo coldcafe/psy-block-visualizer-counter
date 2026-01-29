@@ -78,14 +78,16 @@ export default {
         
         const circuitTypeStr = jobId?.slice(18,20) || '0';
         const circuitType = parseInt(circuitTypeStr, 16);
-        const spendTime = circuitTypeSpendTimeMap[String(circuitType)] || 0;
+        let spendTime = circuitTypeSpendTimeMap[String(circuitType)] || 0;
         const seed = jobId?.slice(38, 44) || '0';
         const randomNum = seedrandom(seed)() * 30;
-
+        if (spendTime) {
+          spendTime += randomNum
+        }
         return new Response(JSON.stringify({
           jobId,
           realmId,
-          spendTime: spendTime + randomNum,
+          spendTime: spendTime,
         }), {
           status: 200,
           headers: {
