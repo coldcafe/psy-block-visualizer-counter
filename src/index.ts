@@ -79,8 +79,8 @@ export default {
         const circuitTypeStr = jobId?.slice(18,20) || '0';
         const circuitType = parseInt(circuitTypeStr, 16);
         let spendTime = circuitTypeSpendTimeMap[String(circuitType)] || 0;
-        const seed = jobId?.slice(38, 44) || '0';
-        const randomNum = seedrandom(seed)() * 30;
+        // const seed = jobId?.slice(38, 44) || '0';
+        const randomNum = seedrandom(jobId || '0')() * 30;
         if (spendTime) {
           spendTime += randomNum
         }
