@@ -1,4 +1,5 @@
 import { CounterDurableObject } from "./counter";
+import seedrandom from 'seedrandom';
 
 export interface Env {
   COUNTER_DURABLE_OBJECT: DurableObjectNamespace;
@@ -12,6 +13,17 @@ const COUNTER_ID = "counter";
 //   'https://psy-block-visualizer.psy-protocol.xyz',
 //   'http://localhost:3000', // 开发用
 // ];
+
+const circuitTypeSpendTimeMap = {
+  '54': 593,
+  '48': 287,
+  '7': 200,
+  '57': 200,
+  '10': 310,
+  '40': 608,
+  '32': 870,
+  '55': 310,
+} as any;
 
 function getCorsHeaders(request: Request) {
   const origin = request.headers.get('Origin');
@@ -63,11 +75,17 @@ export default {
       } else if (url.pathname === "/spend-time" && request.method === "GET") {
         const jobId = url.searchParams.get('job_id');
         const realmId = url.searchParams.get('realm_id');
-        const randomNum = Math.round(Math.random() * 100);
+        
+        const circuitTypeStr = jobId?.slice(18,20) || '0';
+        const circuitType = parseInt(circuitTypeStr, 16);
+        const spendTime = circuitTypeSpendTimeMap[String(circuitType)] || 0;
+        const seed = jobId?.slice(38, 44) || '0';
+        const randomNum = seedrandom(seed)() * 30;
+
         return new Response(JSON.stringify({
           jobId,
           realmId,
-          spendTime: 580 + randomNum,
+          spendTime: spendTime + randomNum,
         }), {
           status: 200,
           headers: {
