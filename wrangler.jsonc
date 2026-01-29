@@ -21,7 +21,7 @@
 	"r2_buckets": [
 		{
 			"binding": "BUCKET",
-			"bucket_name": "psy-benchmark-round1-data"
+			"bucket_name": "psy-benchmark-round1-data-wnam"
 		}
 	],
 	"migrations": [
