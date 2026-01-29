@@ -18,6 +18,12 @@
 			}
 		]
 	},
+	"r2_buckets": [
+		{
+			"binding": "BUCKET",
+			"bucket_name": "psy-benchmark-round1-data"
+		}
+	],
 	"migrations": [
 		{
 			"tag": "v1",

@@ -3,6 +3,7 @@ import seedrandom from 'seedrandom';
 
 export interface Env {
   COUNTER_DURABLE_OBJECT: DurableObjectNamespace;
+  BUCKET: R2Bucket;
 }
 
 export { CounterDurableObject };
@@ -13,7 +14,7 @@ const COUNTER_ID = "counter";
 //   'https://psy-block-visualizer.psy-protocol.xyz',
 //   'http://localhost:3000', // 开发用
 // ];
-
+const rawDataHost = 'https://psy-benchmark-round1-data.psy-protocol.xyz';
 const circuitTypeSpendTimeMap = {
   '54': 583,
   '48': 277,
@@ -81,15 +82,20 @@ export default {
         const circuitTypeStr = jobId?.slice(18,20) || '0';
         const circuitType = parseInt(circuitTypeStr, 16);
         let spendTime = circuitTypeSpendTimeMap[String(circuitType)] || 0;
-        // const seed = jobId?.slice(38, 44) || '0';
         const randomNum = seedrandom(jobId || '0')() * 30;
         if (spendTime) {
           spendTime += randomNum
         }
+
+        const r2Key = `${realmId}/${jobId}/raw_proof.json`;
+        const object = await env.BUCKET.head(r2Key);
+        const fileExists = object !== null;
+
         return new Response(JSON.stringify({
           jobId,
           realmId,
           spendTime: Math.round(spendTime),
+          fileExists,
         }), {
           status: 200,
           headers: {
